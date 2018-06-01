@@ -12,5 +12,14 @@ Catch {
 $OfferedKBList = Get-WindowsUpdate
 $Info = @{}
 $Info.Add("count", $OfferedKBList.Count)
-$Info.Add("info", ($OfferedKBList | select-object -Property KB,Size,Title))
+$Info.Add("list", $OfferedKBList.KB)
+$Details = @{}
+$OfferedKBList | ForEach-Object {
+    $Details.Add($_.KB, @{
+        "Size"  = $_.Size
+        "Title" = $_.Title
+    })
+}
+$Info.Add("details", $Details)
+#$Info.Add("list", ($OfferedKBList | select-object -Property KB,Size,Title))
 $Info | ConvertTo-Json
