@@ -27,7 +27,7 @@ $objServiceManager = New-Object -ComObject "Microsoft.Update.ServiceManager"
 $WUInfo            = Get-WUSettings
 $Info = @{
     "system_needs_reboot"       = $objSystemInfo.RebootRequired
-    "update_source"             = ($objServiceManager = New-Object -ComObject "Microsoft.Update.ServiceManager").Name
+    "update_source"             = ($objServiceManager.services | Where-Object IsDefaultAUService -eq 1).Name
     "update_server_url"         = $WUInfo.WUServer
     "report_server_url"         = $WUInfo.WUStatusServer
     "update_policy"             = $WUInfo.AUOptions
