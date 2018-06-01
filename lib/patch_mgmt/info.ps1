@@ -13,13 +13,13 @@ $objSystemInfo     = New-Object -ComObject "Microsoft.Update.SystemInfo"
 $objServiceManager = New-Object -ComObject "Microsoft.Update.ServiceManager"
 $WUInfo            = Get-WUSettings
 $Info = @{
-    "system_needs_reboot"       = $objSystemInfo.RebootRequired
-    "update_source"             = ($objServiceManager.services | Where-Object IsDefaultAUService -eq 1).Name
-    "update_server_url"         = $WUInfo.WUServer
-    "report_server_url"         = $WUInfo.WUStatusServer
-    "update_policy"             = $WUInfo.AUOptions
-    "autoinstall_minor_updates" = $WUInfo.AutoInstallMinorUpdates
+    "autoinstall_minor_updates" = [bool]$WUInfo.AutoInstallMinorUpdates
     "detection_frequency"       = $WUInfo.DetectionFrequency
+    "report_server_url"         = $WUInfo.WUStatusServer
+    "system_needs_reboot"       = [bool]$objSystemInfo.RebootRequired
+    "update_server_url"         = $WUInfo.WUServer
+    "update_source"             = ($objServiceManager.services | Where-Object IsDefaultAUService -eq 1).Name
+    "update_policy"             = $WUInfo.AUOptions
 }
 
 $Info | ConvertTo-Json
