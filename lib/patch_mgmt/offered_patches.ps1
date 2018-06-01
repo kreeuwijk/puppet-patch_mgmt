@@ -21,5 +21,8 @@ if (-Not $found) {
 }
 
 Import-Module $ENV:ProgramData\PuppetLabs\puppet\cache\lib\patch_mgmt\PSWindowsUpdate.psd1
-$OfferedKBList = Get-WindowsUpdate
-$OfferedKBList | select-object -Property KB,Size,Title | ConvertTo-Json
+$OfferedKBList = @(Get-WindowsUpdate)
+$Info = @{}
+$Info.Add("count", $OfferedKBList.Count)
+$Info.Add("info", ($OfferedKBList | select-object -Property KB,Size,Title))
+$Info | ConvertTo-Json
