@@ -1,26 +1,13 @@
-function New-SymLink ($link, $target)
-{
-    if ($PSVersionTable.PSVersion.Major -ge 5)
-    {
-        New-Item -Path "$link" -ItemType SymbolicLink -Value "$target"
-    }
-    else
-    {
-        $command = "cmd /c mklink /d"
-        invoke-expression "$command ""$link"" ""$target"""
-    }
+Try {
+    Import-Module -Name PSWindowsUpdate -RequiredVersion '2.0.0.4' -ErrorAction Stop
 }
-
-$found = Get-ChildItem -Path $ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate -Recurse -File PSWindowsUpdate.dll
-
-if (-Not $found) {
-    if (-Not (Test-Path $ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate)) {
-        New-Item -Path $ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate -ItemType Directory
+Catch {
+    if (-Not (Test-Path "$ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate")) {
+        New-Item -Path "$ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate" -ItemType Directory
     }
-    New-SymLink -link $ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate\PSWindowsUpdate.dll -target $ENV:ProgramData\PuppetLabs\puppet\cache\lib\patch_mgmt\PSWindowsUpdate.dll
+    Copy-Item -Path "$ENV:ProgramData\PuppetLabs\puppet\cache\lib\patch_mgmt\2.0.0.4" -Destination "$ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate\2.0.0.4" -Recurse -Force
+    Import-Module -Name PSWindowsUpdate -RequiredVersion '2.0.0.4'
 }
-
-Import-Module $ENV:ProgramData\PuppetLabs\puppet\cache\lib\patch_mgmt\PSWindowsUpdate.psd1
 
 $objSystemInfo     = New-Object -ComObject "Microsoft.Update.SystemInfo"
 $objServiceManager = New-Object -ComObject "Microsoft.Update.ServiceManager"
