@@ -1,9 +1,8 @@
+$importcmd = 'Import-Module -Name PSWindowsUpdate -RequiredVersion "2.0.0.4" -ErrorAction Stop'
 If ($PSVersionTable.PSVersion.Major -ge 5) {
-    $importcmd = 'Import-Module -Name PSWindowsUpdate -RequiredVersion "2.0.0.4" -ErrorAction Stop'
     $copysrc   = "$ENV:ProgramData\PuppetLabs\puppet\cache\lib\patch_mgmt\2.0.0.4"
     $copydest  = "$ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate\2.0.0.4"
 } Else {
-    $importcmd = 'Import-Module "$ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate\PSWindowsUpdate.psd1" -ErrorAction Stop'
     $copysrc   = "$ENV:ProgramData\PuppetLabs\puppet\cache\lib\patch_mgmt\2.0.0.4\*"
     $copydest  = "$ENV:ProgramFiles\WindowsPowerShell\Modules\PSWindowsUpdate"
 }
