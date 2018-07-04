@@ -2,6 +2,7 @@ require 'json'
 
 Facter.add('patch_mgmt_installed_updates') do
   confine kernel: 'windows'
+  confine patch_mgmt_psmodule: true
   setcode do
     sysroot = ENV['SystemRoot']
     powershell = "#{sysroot}\\system32\\WindowsPowerShell\\v1.0\\powershell.exe"
@@ -10,7 +11,7 @@ Facter.add('patch_mgmt_installed_updates') do
       File.expand_path(File.dirname(__FILE__)),
       '..',
       'patch_mgmt',
-      'installed_patches.ps1',
+      'patch_mgmt_installed.ps1',
     )
     JSON.parse(Facter::Util::Resolution.exec("#{powershell} -ExecutionPolicy Unrestricted -File #{checker_script}"))
   end
