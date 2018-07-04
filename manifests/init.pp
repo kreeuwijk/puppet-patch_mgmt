@@ -9,6 +9,16 @@ class patch_mgmt {
     default => "${facts['patch_mgmt_psmodulepath']}\\PSWindowsUpdate\\${psmoduleversion}"
   }
 
+  file { "${facts['patch_mgmt_psmodulepath']}\\PSWindowsUpdate":
+    ensure => 'directory'
+  }
+
+  unless versioncmp($facts['powershell_version'], '5') == -1 {
+    file { $psmodulepath:
+      ensure => 'directory'
+    }
+  }
+
   $psmodulefiles = [
     'PSWUSettings.xml.tmp',
     'PSWindowsUpdate.Format.ps1xml',
