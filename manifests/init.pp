@@ -21,7 +21,7 @@ class patch_mgmt {
   $psmodulefiles.each | $file | {
     file { "${psmodulepath}\\${file}":
       ensure => 'present',
-      source => "puppet:///files/${psmoduleversion}/${file}"
+      source => "puppet:///modules/patch_mgmt/${psmoduleversion}/${file}"
     }
   }
 
