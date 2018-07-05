@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'base64'
 require 'puppet/resource_api/simple_provider'
 
 # Implementation for the patch_win type using the Resource API.
@@ -8,16 +9,22 @@ class Puppet::Provider::PatchWin::PatchWin < Puppet::ResourceApi::SimpleProvider
   # confine kernel: 'windows'
   # confine patch_mgmt_psmodule: true
 
-  commands :powershell =>
-    if File.exists?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
-      "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
-    elsif File.exists?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
-      "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
-    else
-      'powershell.exe'
-    end
+  def initialize
+    @powershell = if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+                    "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
+                  elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+                    "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
+                  else
+                    'powershell.exe'
+                  end
+  end
 
-  def get(context)
+  def powershell_cmd(pscode)
+    encoded_cmd = Base64.strict_encode64(pscode.encode('utf-16le'))
+    Open3.popen3("#{@powershell} -encodedCommand #{encoded_cmd}") { |_stdin, stdout, _stderr, _wait_thr| stdout.read }
+  end
+
+  def get(_context)
     get_patches = <<~EOS
       $PatchList = @()
       $arrUpdates = @(Get-CimInstance -ClassName Win32_QuickFixEngineering -Namespace "root\cimv2")
@@ -31,8 +38,7 @@ class Puppet::Provider::PatchWin::PatchWin < Puppet::ResourceApi::SimpleProvider
       }
       $PatchList | ConvertTo-JSON
     EOS
-    stdin, stdout, stderr = Open3.popen3(powershell([get_patches]))
-    stdout
+    powershell_cmd(get_patches)
   end
 
   def create(context, name, should)
