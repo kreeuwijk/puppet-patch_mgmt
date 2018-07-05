@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 Facter.add('patch_mgmt_installed_updates') do

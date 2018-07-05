@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Facter.add('patch_mgmt_psmodule') do
   confine kernel: 'windows'
   setcode do
