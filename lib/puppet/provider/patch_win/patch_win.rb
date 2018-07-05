@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'open3'
 require 'base64'
 require 'puppet/resource_api/simple_provider'
 
@@ -21,13 +20,13 @@ class Puppet::Provider::PatchWin::PatchWin < Puppet::ResourceApi::SimpleProvider
 
   def powershell_cmd(pscode)
     encoded_cmd = Base64.strict_encode64(pscode.encode('utf-16le'))
-    Open3.popen3("#{@powershell} -encodedCommand #{encoded_cmd}") { |_stdin, stdout, _stderr, _wait_thr| stdout.read }
+    exec("#{@powershell} -encodedCommand #{encoded_cmd}")
   end
 
   def get(_context)
     get_patches = <<~EOS
       $PatchList = @()
-      $arrUpdates = @(Get-CimInstance -ClassName Win32_QuickFixEngineering -Namespace "root\cimv2")
+      $arrUpdates = @(Get-CimInstance -ClassName Win32_QuickFixEngineering)
       $arrUpdates | ForEach-Object {
         $patch = @{
           name = $_.HotFixID
