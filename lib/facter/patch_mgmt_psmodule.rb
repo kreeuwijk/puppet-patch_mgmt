@@ -11,9 +11,9 @@ Facter.add('patch_mgmt_psmodule') do
       'patch_mgmt_psmodule.ps1',
     )
     result = Facter::Util::Resolution.exec("#{powershell} -ExecutionPolicy Unrestricted -File #{checker_script}")
-    if result.to_s.downcase == 'true'
+    if result.to_s.casecmp('true').zero?
       true
-    elsif result.to_s.downcase == 'false'
+    elsif result.to_s.casecmp('false').zero?
       false
     end
   end
