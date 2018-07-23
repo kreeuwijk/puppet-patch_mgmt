@@ -33,6 +33,7 @@ group :development do
   gem "puppet-module-posix-dev-r#{minor_version}",     require: false, platforms: [:ruby]
   gem "puppet-module-win-default-r#{minor_version}",   require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-module-win-dev-r#{minor_version}",       require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "puppet-resource_api",                           require: false
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
@@ -59,8 +60,6 @@ if Gem.win_platform? && puppet_version =~ %r{^(file:///|git://)}
   gems['win32-security'] = ['<= 0.2.5', require: false]
   gems['win32-service'] =  ['0.8.8', require: false]
 end
-
-# gem 'puppet-resource_api', git: 'https://github.com/puppetlabs/puppet-resource_api', ref: 'master'
 
 gems.each do |gem_name, gem_params|
   gem gem_name, *gem_params
